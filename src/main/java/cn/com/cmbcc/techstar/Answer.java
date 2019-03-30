@@ -40,7 +40,7 @@ public class Answer {
                 break;
             case 2:
                 System.out.println("verify No." + num);
-                Answer2.getSundayNum(args[1], args[2]);
+                Answer2.resultMethod(args);
                 break;
 
             case 3:
@@ -50,7 +50,7 @@ public class Answer {
 
             case 4:
                 System.out.println("verify No." + num);
-                Answer4.print(args[1]);
+                Answer4.print(args);
                 break;
 
             case 5:
