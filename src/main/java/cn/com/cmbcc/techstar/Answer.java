@@ -78,10 +78,6 @@ public class Answer {
                 Answer9.startRun(args[1]);
                 break;
 
-            case 10:
-                System.out.println("verify No." + num);
-                Answer10.print(args[1]);
-                break;
             default:
                 System.out.println("verify No." + num);
                 break;
