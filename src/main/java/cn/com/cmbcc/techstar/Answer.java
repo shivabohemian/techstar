@@ -61,7 +61,7 @@ public class Answer {
 
             case 6:
                 System.out.println("verify No." + num);
-                Answer6.print(args[1]);
+                Answer6.print(args);
                 break;
 
             case 7:
