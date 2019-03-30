@@ -36,7 +36,7 @@ public class Answer {
             case 1:
                 //call
                 System.out.println("verify No." + num);
-                Answer1.sum(args[1]);
+                Answer1.sum(args);
                 break;
             case 2:
                 System.out.println("verify No." + num);
@@ -70,38 +70,7 @@ public class Answer {
 
             case 8:
                 System.out.println("verify No." + num);
-                int port = 0;
-                if (args.length < 2) {
-                    System.out.println("please define listen port");
-                    return;
-                }
-                try {
-                    port = Integer.parseInt(args[1]);
-                } catch (NumberFormatException e) {
-                    logger.error(e.getMessage());
-                }
-
-
-                Answer8 answer8 = new Answer8(port,"GB18030",args[2]);
-                answer8.startListen();
-
-                String sendXml = "<?xml version=\"1.0\" encoding=\"GB18030\" standalone=\"yes\"?>" +
-                        "<REQUEST>" +
-                        "<HEAD><TRCD>CCXB</TRCD>" +
-                        "<TRDT>20180306</TRDT><TRTM>134117</TRTM>" +
-                        "<MSCOPRSEQ>14877023</MSCOPRSEQ>" +
-                        "<TRTP></TRTP><SOUR>ZMXY</SOUR>" +
-                        "</HEAD>" +
-                        "<BODY>" +
-                        "<cStlFlag>1</cStlFlag><sKeyType>01</sKeyType>" +
-                        "<sCustId>432322197801010001</sCustId>" +
-                        "<sBusiDept></sBusiDept><BpFlag>P</BpFlag>" +
-                        "<cPinFlag>0</cPinFlag><sNewPinData></sNewPinData>" +
-                        "<COUT>1</COUT><FOUT>10</FOUT></BODY></REQUEST>";
-
-                SocketService socketService = new SocketService();
-                String returnXml = socketService.sendXml(sendXml, "GBK", "127.0.0.1", port);
-                System.out.println("返回结果：" + returnXml);
+                Answer8.startRun(args[1]);
                 break;
 
             case 9:

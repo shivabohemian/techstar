@@ -2,9 +2,13 @@ package cn.com.cmbcc.techstar;
 
 public class Answer1 {
 
-    public static void sum(String str) {
+    public static void sum(String[] arg) {
         int sum = 0;
-        ;
+        StringBuilder sb2 = new StringBuilder();
+        for (int i = 1; i < arg.length;i++){
+            sb2.append(arg[i]);
+        }
+        String str = sb2.toString();
         try {
             str = str.replaceAll(" ", "");
             String str1 = str.split("\\+")[0];

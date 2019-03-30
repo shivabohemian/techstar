@@ -1,13 +1,6 @@
 package cn.com.cmbcc.techstar;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.*;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 
 /**
  * Answer5 class
