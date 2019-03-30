@@ -36,7 +36,7 @@ public class Answer {
             case 1:
                 //call
                 System.out.println("verify No." + num);
-                Answer1.sumPrime();
+                Answer1.sum(args[1]);
                 break;
             case 2:
                 System.out.println("verify No." + num);

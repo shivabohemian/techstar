@@ -1,65 +1,41 @@
 package cn.com.cmbcc.techstar;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-
 public class Answer1 {
-    private Integer mutex = 1;
-    private static long total = 1;//保存质数和值
-    private static final int MAXVALUE = 1000000;//求MAXVALUE范围内的质数和值
-    private static final int THREADAMOUNT = 10;//线程数量
-    private static final int SPAN = MAXVALUE/THREADAMOUNT;//每个线程统计数据的跨度
-    private static final CountDownLatch countDownLatch = new CountDownLatch(THREADAMOUNT);
-    public static void main(String[] args) {
-        double startTime = System.currentTimeMillis();
-        sumPrime();
-        System.out.println("计算耗时为： " + (System.currentTimeMillis() - startTime)/1000);
-    }
 
-    public static long sumPrime() {
-        Answer1 an = new Answer1();
-        List<MyThread> threadList = new ArrayList<>();
-        for(int i=1; i<=THREADAMOUNT; i++) {
-            threadList.add(an.new MyThread((i-1)*SPAN, i*SPAN, countDownLatch));
-        }
-        for(int i=0; i<threadList.size(); i++) {
-            threadList.get(i).start();
-        }
+    public static void sum(String str) {
+        int sum = 0;
+        ;
         try {
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println("和值为： " + total);
-        return total;
-    }
+            str = str.replaceAll(" ", "");
+            String str1 = str.split("\\+")[0];
+            String str2 = str.split("\\+")[1];
 
-    class MyThread extends Thread {
-        private int start;
-        private int end;
-        private CountDownLatch countDownLatch;
-        public MyThread(int start, int end, CountDownLatch countDownLatch) {
-            this.start = start;
-            this.end = end;
-            this.countDownLatch = countDownLatch;
-        }
-        public void run() {
-            for (int i = start + 1; i < end; i++) {
-                synchronized (mutex) {
-                    boolean flag = true;
-                    for (int j = 2; j <= Math.ceil(Math.sqrt(i)); j++) {
-                        if (i % j == 0) {
-                            flag = false;
-                        }
-                    }
-                    if (flag == true) {
-                        total += i;
-                        //System.out.println(i + "是素数");
-                    }
+            //去括号
+            str1 = str1.replace("(", "").replace(")", "");
+            str2 = str2.replace("(", "").replace(")", "");
+
+            String[] arr1 = str1.split("->");
+            String[] arr2 = str2.split("->");
+            for (int i = 0; i < arr1.length; i++) {
+                int temp = Integer.parseInt(arr1[i]);
+                sum += temp * Math.pow(10, i);
+            }
+            for (int j = 0; j < arr2.length; j++) {
+                int temp = Integer.parseInt(arr2[j]);
+                sum += temp * Math.pow(10, j);
+            }
+
+            String printNum = String.valueOf(sum);
+            StringBuilder sb = new StringBuilder();
+            for (int i = printNum.length() - 1; i >= 0; i--) {
+                sb.append(printNum.charAt(i));
+                if (i != 0) {
+                    sb.append(" -> ");
                 }
             }
-            countDownLatch.countDown();
+            System.out.println(sb.toString());
+        } catch (Exception e) {
+            System.out.println("您输入的表达式有误，请重新输入");
         }
     }
 }
