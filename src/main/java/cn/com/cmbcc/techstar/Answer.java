@@ -50,7 +50,7 @@ public class Answer {
 
             case 4:
                 System.out.println("verify No." + num);
-                Answer4.print(args[1]);
+                Answer4.print(args);
                 break;
 
             case 5:
