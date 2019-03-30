@@ -1,93 +1,184 @@
 package cn.com.cmbcc.techstar;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import net.sourceforge.pinyin4j.PinyinHelper;
+import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
+import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
+import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
+
+import java.io.*;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Created by liudianbing on 2018/3/6.
- */
+
 public class Answer9 {
 
-    private static List<String> getFileData(String file) throws Exception {
-        List<String> datas = new ArrayList<>();
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            datas.add(line);
-        }
-        if (reader != null) reader.close();
-        return datas;
+    static public HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();
+
+    static {
+        defaultFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);
+        defaultFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
     }
 
-    public static List<String> SelectData(String file, String cardNo) throws Exception {
+    private static Map<Character, Integer> dictIndex = new HashMap<>();
+    private static Map<Integer, Set<Character>> dict = new HashMap<>();
+    private static Map<String, Set<Character>> spellDict = new HashMap<>();
 
-        cardNo = cardNo.replace("*", "[\\d]");
-        List<String> datas = getFileData(file);
-        List<String> results = new ArrayList<>();
-        int count = 0;
-        Pattern p = Pattern.compile(cardNo);
-        for (String data : datas) {
-            Matcher m = p.matcher(data);
-            if (m.find()) {
-                count++;
-                results.add(data);
-                if (count >= 30) break;
+
+    public static void startRun(String chaneseArray){
+        char[] arr = chaneseArray.toCharArray();
+
+        for (Character character : arr) {
+            if (getSpell(character) == null)
+                return;
+        }
+
+
+        try {
+            init();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        List<String> spellList = new ArrayList<>();
+        for (Character character : arr) {
+            String spell = getSpell(character);
+            Set<Character> characters = spellDict.get(spell);
+            if (characters == null || characters.size() == 0) {
+                spellList = new ArrayList<>();
+                break;
             }
+            if (spellList.size() == 0) {
+                List<String> finalList = spellList;
+                //characters.forEach(p -> finalList.add(p.toString()));
+                Iterator<Character> it = characters.iterator();
+                while (it.hasNext()) {
+                    Character str = it.next();
+                    finalList.add(str.toString());
+                   // System.out.println(str);
+                }
+                continue;
+            }
+            List<String> mid = new ArrayList<>();
+            //spellList.forEach(p -> characters.forEach(charMid -> mid.add(p + charMid.toString())));
+           for (int k = 0 ;k < spellList.size();k++){
+               String p = spellList.get(k);
+               Iterator<Character> it = characters.iterator();
+               while (it.hasNext()) {
+                   Character charMid = it.next();
+                   mid.add(p+charMid.toString());
+                   //finalList.add(str.toString());
+                   // System.out.println(str);
+               }
+           }
+            spellList = mid;
         }
-        return results;
+
+
+        List<String> list = new ArrayList<>();
+        for (Character character : arr) {
+            Integer index = dictIndex.get(character);
+            Set<Character> characters = dict.get(index);
+            if (characters == null || characters.size() == 0) {
+                list = new ArrayList<>();
+                break;
+            }
+            if (list.size() == 0) {
+                List<String> finalList = list;
+                //characters.forEach(p -> finalList.add(p.toString()));
+                Iterator<Character> it = characters.iterator();
+                while (it.hasNext()) {
+                    Character str = it.next();
+                    finalList.add(str.toString());
+                    // System.out.println(str);
+                }
+                continue;
+            }
+            List<String> mid = new ArrayList<>();
+            //list.forEach(p -> characters.forEach(charMid -> mid.add(p + charMid.toString())));
+            for (int m = list.size();m<list.size();m++){
+                String str = list.get(m);
+                Iterator<Character> it = characters.iterator();
+                while (it.hasNext()) {
+                    Character charMid = it.next();
+                    mid.add(str + charMid.toString());
+                    // System.out.println(str);
+                }
+            }
+            list = mid;
+        }
+
+        list.addAll(spellList);
+        int len = list.size();
+        for (int n = 0;n < len;n++){
+            if (n == len-1) {
+                System.out.printf(list.get(n));
+            }else{
+                System.out.printf(list.get(n) + ", ");
+            }
+
+        }
+        //System.out.println(String.join(",", list));
     }
 
-    /*public static void main(String[] args) {
 
-        //生产一批已经使用的数据
-        Scanner sc = new Scanner(System.in);
-        while (sc.hasNext()) {
-            String cardNo = sc.next();
-            if (cardNo.length() > 4 && cardNo.length() < 7) {
-                try {
-                    List<String> datas = SelectData("src\\main\\data\\Q9\\used.txt", cardNo);
-                    if (datas.size() == 0) {
-                        System.out.println("未找到满足条件的");
-                    } else {
-                        for (String data : datas) {
-                            System.out.println("6226 0208 8" + data);
-                        }
-                    }
+    private static List<String> readFile() throws IOException {
+        InputStream inputStream = Answer9.class.getClassLoader().getResourceAsStream("simu-chinese.txt");
 
-                } catch (Exception e) {
-                    System.out.println("文件读取异常");
-                }
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        List<String> ret = new ArrayList<>();
+        String mid;
+        while ((mid = bufferedReader.readLine()) != null) {
+            if ("".equals(mid)) {
+                continue;
+            }
+            ret.add(mid);
+        }
+        return ret;
+    }
+
+    public static void init() throws IOException {
+
+        List<String> fileList = readFile();
+        for (String line : fileList) {
+            String[] split = line.split(",");
+            int num = Integer.valueOf(split[0]);
+            char mid = split[1].toCharArray()[0];
+            //按照相同序号归类
+            if (dict.containsKey(num)) {
+                dict.get(num).add(mid);
             } else {
-                System.out.println("只接受输入5位或者6位");
+                dict.put(num, new HashSet<>(Collections.singleton(mid)));
+
             }
 
-        }
-
-    }*/
-
-    public static void print(String cardNo) {
-        if (cardNo.length() > 4 && cardNo.length() < 7) {
-            try {
-                List<String> datas = SelectData("src\\main\\data\\Q9\\used.txt", cardNo);
-                if (datas.size() == 0) {
-                    System.out.println("未找到满足条件的");
-                } else {
-                    for (String data : datas) {
-                        System.out.println("6226 0208 8" + data);
-                    }
-                }
-
-            } catch (Exception e) {
-                System.out.println("文件读取异常");
+            //按照拼音归类
+            dictIndex.put(mid, num);
+            String spell = getSpell(mid);
+            if (spell == null) {
+                continue;
             }
-        } else {
-            System.out.println("只接受输入5位或者6位");
+            if (spellDict.containsKey(spell)) {
+                spellDict.get(spell).add(mid);
+            } else {
+                spellDict.put(spell, new HashSet<>(Collections.singleton(mid)));
+            }
         }
+
     }
+
+    public static String getSpell(char aloneArr) {
+        if (aloneArr > 128) {
+            try {
+                String mid = PinyinHelper.toHanyuPinyinStringArray(aloneArr, defaultFormat)[0];
+                if (mid != null) {
+                    return mid;
+                }
+            } catch (Exception e) {
+            }
+        }
+        return null;
+
+    }
+
 }

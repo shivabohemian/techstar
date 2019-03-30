@@ -106,7 +106,7 @@ public class Answer {
 
             case 9:
                 System.out.println("verify No." + num);
-                Answer9.print(args[1]);
+                Answer9.startRun(args[1]);
                 break;
 
             case 10:

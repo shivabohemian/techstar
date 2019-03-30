@@ -93,6 +93,11 @@
             <artifactId>spring-web</artifactId>
             <version>4.3.14.RELEASE</version>
         </dependency>
+        <dependency>
+            <groupId>com.belerweb</groupId>
+            <artifactId>pinyin4j</artifactId>
+            <version>2.5.0</version>
+        </dependency>
 
 
         <!--httpclient-->
