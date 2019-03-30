@@ -16,78 +16,110 @@ import javax.script.ScriptException;
  */
 public class Answer5 {
 
-    //使用递归求出5^8种情况
-    public static void getResult(int index,int[] result){
-        if(index==8){
-            showResult(result);//根据数组的取值转换成表达式，且求值，这方法有待改进，写的很乱
+    public static void main(String[] args) {
+        if (args.length != 1) {
             return;
         }
-        //每个空有五种可能，0,1,2，3，4
-        for(int i=0;i<5;i++){
-            result[index]=i;
-            getResult(index+1,result);
-            result[index]=0; //恢复原来的状态
+        int num = Integer.valueOf(args[0]);
+        calculateResult(0, new int[10], 5);
+
+    }
+
+    //0,1,2,3,4  "" + - *  /
+    static private char parse(int op) {
+        switch (op) {
+            case 1:
+                return '+';
+            case 2:
+                return '-';
+            case 3:
+                return '*';
+            default:
+                return '/';
         }
     }
-    public static void showResult(int[] result){
 
-        int sum=0;
-        String[] source = new String[]{"1","2","3","4","5","6","7","8","9"};
-        //最终的表达式，最好用StringBuilder，在非多线程的情况下，字符串拼接的性能，StringBuilder最好，
-        //当然用StringBuffer或者单纯的String也可以
-        StringBuilder expression=new StringBuilder();
-        expression.append(source[0]);
+    static private void systemResult(int ret[], int sum) {
 
-        //先合并空格
-        for(int i=0;i<result.length;i++){
-            if(result[i]==0){//如果为0，表示数字合并
-                //number.append(source[i+1]);
-                expression.append(source[i+1]);
-            } else if(result[i]==1){
-                //sum=calc(operateChar,sum,number);
-                //operateChar='+';
-                //number.append(source[i+1]);
-                expression.append("+").append(source[i+1]);
-            }else if(result[i]==2){
-                /*sum=calc(operateChar,sum,number);
-                operateChar='-';
-                number.append(source[i+1]);*/
-                expression.append("-").append(source[i+1]);
-            }if(result[i]==3){
-                /*sum=calc(operateChar,sum,number);
-                operateChar='*';
-                number.append(source[i+1]);*/
-                expression.append("*").append(source[i+1]);
-            }else if(result[i]==4){
-                /*sum=calc(operateChar,sum,number);
-                operateChar='/';
-                number.append(source[i+1]);*/
-                expression.append("/").append(source[i+1]);
+        Integer nums[] = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9};
+        int retSum = 0;
+
+        StringBuilder result = new StringBuilder();
+        result.append(1);
+
+        int midNum = 1;
+        Stack<Integer> num = new Stack<>();
+        Stack<Integer> ops = new Stack<>();
+
+        for (int i = 0; i < 8; i++) {
+            int operation = ret[i];
+            switch (operation) {
+                case 0:
+                    midNum = midNum * 10 + nums[i + 1];
+                    result.append(nums[i + 1]);
+                    break;
+                default:
+                    num.push(midNum);
+                    ops.push(operation);
+                    result.append(parse(operation));
+                    midNum = nums[i + 1];
+                    result.append(nums[i + 1]);
+
             }
         }
+        num.push(midNum);
+        int multi = 1;
+        int div = 1;
+        while (!num.empty()) {
+            int singleNum = num.pop();
+            int op = ops.isEmpty() ? 0 : ops.pop();
 
-        sum = calcExpression(expression);
-        if(sum==140){
-            System.out.print(expression.toString()+"=140");
-            System.out.println();
-        }
-    }
-
-    public static int calcExpression(StringBuilder expression){
-
-        ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
-        ScriptEngine scriptEngine = scriptEngineManager.getEngineByName("nashorn");
-
-        try {
-            String result = String.valueOf(scriptEngine.eval(expression.toString()));
-            //System.out.println(result);
-            if (result.contains(".")){
-                return 0;
+            if (op == 3) {
+                multi *= singleNum;
+                continue;
             }
-            return Integer.parseInt(result);
-        } catch (ScriptException e) {
-            e.printStackTrace();
+            if (op == 4) {
+                div *= singleNum;
+                continue;
+            }
+            if (div != 1 || multi != 1) {
+                if (singleNum * multi % div != 0) {
+                    return;
+                }
+                singleNum = singleNum * multi / div;
+                multi = 1;
+                div = 1;
+            }
+
+            if (op == 1) {
+                retSum += singleNum;
+            }
+            if (op == 2) {
+                retSum -= singleNum;
+            }
+            if (op == 0) {
+                retSum += singleNum;
+            }
         }
-        return 0;
+        if (retSum == sum) {
+            System.out.println(result + "=" + sum);
+        }
+
     }
+
+    static public void calculateResult(int index, int ret[], int sum) {
+        if (index > 8) {
+            return;
+        }
+        for (int i = 0; i < 5; i++) {
+            ret[index] = i;
+            calculateResult(index + 1, ret, sum);
+            if (index == 8) {
+                systemResult(ret, sum);
+                return;
+            }
+        }
+        return;
+    }
+
 }

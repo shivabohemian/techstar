@@ -56,7 +56,7 @@ public class Answer {
             case 5:
                 int[] result=new int[8];
                 System.out.println("verify No." + num);
-                Answer5.getResult(0,result);
+                Answer5.calculateResult(0,new int[10],140);
                 break;
 
             case 6:
