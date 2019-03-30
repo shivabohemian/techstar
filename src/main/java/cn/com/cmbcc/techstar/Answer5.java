@@ -4,121 +4,90 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.StringTokenizer;
+import java.util.*;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 /**
  * Answer5 class
  *
- * @author wangqiang
  * @date 2018/3/17
  */
 public class Answer5 {
-    private MappedByteBuffer[] mappedBufArray;
-    private int count = 0;
-    private int number;
-    private FileInputStream fileIn;
-    private long fileLength;
-    private int arraySize;
-    private static byte[] array;
 
-    public Answer5(String fileName, int arraySize) throws IOException {
-        this.fileIn = new FileInputStream(fileName);
-        FileChannel fileChannel = fileIn.getChannel();
-        this.fileLength = fileChannel.size();
-        //number为映射文件个数
-        this.number = (int) Math.ceil((double) fileLength / (double) Integer.MAX_VALUE);
-        this.mappedBufArray = new MappedByteBuffer[number]; //内存文件映射数组
-        long preLength = 0;
-        long regionSize = (long) Integer.MAX_VALUE; //连续区域的大小
-        for (int i = 0; i < number; i++) {
-            //将文件的连续区域映射到内存文件数组中
-            if (fileLength - preLength < (long) Integer.MAX_VALUE) {
-                regionSize = fileLength - preLength; //最后一片区域的大小
-            }
-            mappedBufArray[i] = fileChannel.map(FileChannel.MapMode.READ_ONLY, preLength, regionSize);
-            preLength += regionSize; //下一片区域的开始
+    //使用递归求出5^8种情况
+    public static void getResult(int index,int[] result){
+        if(index==8){
+            showResult(result);//根据数组的取值转换成表达式，且求值，这方法有待改进，写的很乱
+            return;
         }
-        this.arraySize = arraySize;
-    }
-
-    public int read() throws IOException {
-        if (count >= number) {
-            return -1;
-        }
-        int limit = mappedBufArray[count].limit();
-        int position = mappedBufArray[count].position();
-        if (limit - position > arraySize) {
-            array = new byte[arraySize];
-            mappedBufArray[count].get(array);
-            return arraySize;
-        } else { //本内存文件映射最后一次读取数据
-            array = new byte[limit - position];
-            mappedBufArray[count].get(array);
-            if (count < number) {
-                count++; //转换到下一个内存文件映射
-            }
-            return limit - position;
+        //每个空有五种可能，0,1,2，3，4
+        for(int i=0;i<5;i++){
+            result[index]=i;
+            getResult(index+1,result);
+            result[index]=0; //恢复原来的状态
         }
     }
+    public static void showResult(int[] result){
 
-    public void close() throws IOException {
-        fileIn.close();
-        array = null;
-    }
+        int sum=0;
+        String[] source = new String[]{"1","2","3","4","5","6","7","8","9"};
+        //最终的表达式，最好用StringBuilder，在非多线程的情况下，字符串拼接的性能，StringBuilder最好，
+        //当然用StringBuffer或者单纯的String也可以
+        StringBuilder expression=new StringBuilder();
+        expression.append(source[0]);
 
-    public static byte[] getArray() {
-        return array;
-    }
-
-   /* public static void main(String[] args) throws IOException {
-        Scanner sc = new Scanner(System.in);
-        while (sc.hasNext()) {
-            int count = 0;
-            String filePath = sc.next();
-            String word = sc.next();
-            Answer5 reader = new Answer5(filePath, 65536);
-            long start = System.nanoTime();
-            while (reader.read() != -1) {
-                List<String> strList = new ArrayList<String>();
-                StringTokenizer st = new StringTokenizer(new String(getArray()), ",.!\n");
-                while (st.hasMoreTokens()) {
-                    strList.add(st.nextToken());
-                }
-                for (String s : strList) {
-                    StringTokenizer st2 = new StringTokenizer(s, " ");
-                    while (st2.hasMoreTokens()) {
-                        if (word.equals(st2.nextToken())) {
-                            count++;
-                        }
-                    }
-                }
-            }
-            System.out.println(count);
-        }
-    }*/
-
-    public static void print(String filePath,String word) throws IOException {
-        int count = 0;
-        Answer5 reader = new Answer5(filePath, 65536);
-        long start = System.nanoTime();
-        while (reader.read() != -1) {
-            List<String> strList = new ArrayList<String>();
-            StringTokenizer st = new StringTokenizer(new String(getArray()), ",.!\n");
-            while (st.hasMoreTokens()) {
-                strList.add(st.nextToken());
-            }
-            for (String s : strList) {
-                StringTokenizer st2 = new StringTokenizer(s, " ");
-                while (st2.hasMoreTokens()) {
-                    if (word.equals(st2.nextToken())) {
-                        count++;
-                    }
-                }
+        //先合并空格
+        for(int i=0;i<result.length;i++){
+            if(result[i]==0){//如果为0，表示数字合并
+                //number.append(source[i+1]);
+                expression.append(source[i+1]);
+            } else if(result[i]==1){
+                //sum=calc(operateChar,sum,number);
+                //operateChar='+';
+                //number.append(source[i+1]);
+                expression.append("+").append(source[i+1]);
+            }else if(result[i]==2){
+                /*sum=calc(operateChar,sum,number);
+                operateChar='-';
+                number.append(source[i+1]);*/
+                expression.append("-").append(source[i+1]);
+            }if(result[i]==3){
+                /*sum=calc(operateChar,sum,number);
+                operateChar='*';
+                number.append(source[i+1]);*/
+                expression.append("*").append(source[i+1]);
+            }else if(result[i]==4){
+                /*sum=calc(operateChar,sum,number);
+                operateChar='/';
+                number.append(source[i+1]);*/
+                expression.append("/").append(source[i+1]);
             }
         }
-        System.out.println(count);
+
+        sum = calcExpression(expression);
+        if(sum==140){
+            System.out.print(expression.toString()+"=140");
+            System.out.println();
+        }
+    }
+
+    public static int calcExpression(StringBuilder expression){
+
+        ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+        ScriptEngine scriptEngine = scriptEngineManager.getEngineByName("nashorn");
+
+        try {
+            String result = String.valueOf(scriptEngine.eval(expression.toString()));
+            //System.out.println(result);
+            if (result.contains(".")){
+                return 0;
+            }
+            return Integer.parseInt(result);
+        } catch (ScriptException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

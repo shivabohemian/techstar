@@ -54,8 +54,9 @@ public class Answer {
                 break;
 
             case 5:
+                int[] result=new int[8];
                 System.out.println("verify No." + num);
-                Answer5.print(args[1], args[2]);
+                Answer5.getResult(0,result);
                 break;
 
             case 6:
