@@ -21,17 +21,25 @@ public class Answer3 {
             }
 
             int sum = 0;
-            int count = 1;
+            int count = 0;
+            //flag = true 正向报数， false = 反向报数
+            boolean flag = true;
             while (sum + 1 < n){
 
-                //正向查数
-                for (int j = 1; j<n;j++){
+                for (int j = 0; j<n;j++){
                     //没有剔除
                     if (!ary[j] ){
-                        count ++;
+                        if (flag){
+                            count++;
+                        }else {
+                            count -- ;
+                            if (count == 1){
+                                flag = true;
+                            }
+                        }
                         if (count == 3){
+                            flag = !flag;
                             ary[j] = true;
-                            count = 0;
                             sum ++;
                             if (sum + 1 == n){
                                 break;
@@ -39,21 +47,7 @@ public class Answer3 {
                         }
                     }
                 }
-                //反向查数
-                for (int k = n-2; k>=0;k--){
-                    //没有剔除
-                    if (!ary[k] ){
-                        count ++;
-                        if (count == 3){
-                            ary[k] = true;
-                            count = 0;
-                            sum ++;
-                            if (sum + 1 == n){
-                                break;
-                            }
-                        }
-                    }
-                }
+
             }
 
             for(int m = 0 ; m < n ; m++) {
