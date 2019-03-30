@@ -10,73 +10,80 @@ public class Answer2 {
     private static final String FORMAT = "yyyy-MM-dd";
 
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        while (sc.hasNext()) {
-
-            String startDate = sc.next();
-            String endDate = sc.next();
-
-            int i=getSundayNum(startDate, endDate);
-            if(i != -1){
-                System.out.println(i);
-            }
-
-        }
+        String[] arr = new String[]{"2", "-3", "-2", "-1", "0", "1", "2", "3"};
+        String[] arr1 = new String[]{"0", "1"};
+        resultMethod(arr);
     }
 
     /**
-     * 计算两个日期之间Sunday天数
-     * 参数format传 yyyy-MM-dd
+     * 入口方法
+     * @param args
      */
-    public static int getSundayNum(String startDate, String endDate) {
-        List yearMonthDayList = new ArrayList();
-        Date start = null, end = null;
+    public static void resultMethod(String[] args) {
+        if(args == null || args.length<=4) {
+            System.out.println("输入有误");
+            return;
+        }
+        String[] args_ = new String[args.length-1];
+        for(int i=1; i<args.length; i++) {
+            args_[i-1] = args[i];
+        }
+        int[] intArr = stringArrToIntArr(args_);
+        findThreeNums(intArr);
+        return;
+    }
+
+    /**
+     * 将String[]转换成int[]
+     * @param args
+     * @return
+     */
+    private static int[] stringArrToIntArr(String[] args) {
+        if(args == null || args.length == 0) {
+            System.out.println("请输入正确的参数！");
+            return null;
+        }
+        int[] intArr = new int[args.length];
+        int index = 0;
         try {
-            start = new SimpleDateFormat(FORMAT).parse(startDate);
-            end = new SimpleDateFormat(FORMAT).parse(endDate);
-        } catch (ParseException e) {
-            System.out.println("日期格式错误");
-            return -1;
+            for (String str : args) {
+                intArr[index++] = Integer.parseInt(str);
+            }
+        } catch(NumberFormatException e) {
+            System.out.println("请输入整型数！");
+            return null;
         }
-        if (start.after(end)) {
-            Date tmp = start;
-            start = end;
-            end = tmp;
+        return intArr;
+    }
+
+    /**
+     * 从int[]中找出所有符合a+b+c=0的三元组
+     * @param nums
+     * @return
+     */
+    private static List<int[]> findThreeNums(int[] nums) {
+        List<int[]> resultList = new ArrayList<>();
+        if(nums == null || nums.length<3) {
+            System.out.println("请输入合理的整形数组！");
+            return null;
         }
-        //将起止时间中的所有时间加到List中
-        Calendar calendarTemp = Calendar.getInstance();
-        calendarTemp.setTime(start);
-        while (calendarTemp.getTime().getTime() <= end.getTime()) {
-            yearMonthDayList.add(new SimpleDateFormat(FORMAT)
-                    .format(calendarTemp.getTime()));
-            calendarTemp.add(Calendar.DAY_OF_YEAR, 1);
-        }
-        Collections.sort(yearMonthDayList);
-        int total = 0;//周日的总天数
-        int week = 0;
-        for (int i = 0; i < yearMonthDayList.size(); i++) {
-            String day = (String)yearMonthDayList.get(i);
-            week = getWeek(day, FORMAT);
-            if (week == 0) {//周日
-                total++;
+        for(int i=0; i<nums.length; i++) {
+            for(int j=i+1; j<nums.length; j++) {
+                int total = nums[i] + nums[j];
+                for(int k=j+1; k<nums.length; k++) {
+                    if(total + nums[k] == 0) {
+                        resultList.add(new int[]{nums[i], nums[j], nums[k]});
+                    }
+                }
             }
         }
-        System.out.println("总天数： " + total);
-        return total;
-    }
-    /**
-     * 获取某个日期是星期几
-     */
-    public static int getWeek(String date, String format) {
-        Calendar calendarTemp = Calendar.getInstance();
-        try {
-            calendarTemp.setTime(new SimpleDateFormat(format).parse(date));
-        } catch (ParseException e) {
-            e.printStackTrace();
+        for(int[] innerArr : resultList) {
+            for(int i=0; i<innerArr.length; i++) {
+                System.out.print(innerArr[i] + ", ");
+            }
+            System.out.println();
         }
-        int i = calendarTemp.get(Calendar.DAY_OF_WEEK);
-        int value=i-1;//0-星期日
-        return value;
+        return resultList;
     }
 
 }
