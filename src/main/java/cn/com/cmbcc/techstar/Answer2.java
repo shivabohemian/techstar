@@ -1,26 +1,15 @@
 package cn.com.cmbcc.techstar;
 
-import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Answer2 {
-
-    private static final String FORMAT = "yyyy-MM-dd";
-
-    public static void main(String[] args) {
-        String[] arr = new String[]{"2", "-3", "-2", "-1", "0", "1", "2", "3"};
-        String[] arr1 = new String[]{"0", "1"};
-        resultMethod(arr);
-    }
 
     /**
      * 入口方法
      * @param args
      */
     public static void resultMethod(String[] args) {
-        if(args == null || args.length<=4) {
+        if(args == null || args.length<4) {
             System.out.println("输入有误");
             return;
         }
@@ -77,11 +66,19 @@ public class Answer2 {
                 }
             }
         }
+
+        Map<String,String> map = new HashMap<String,String>();
         for(int[] innerArr : resultList) {
-            for(int i=0; i<innerArr.length; i++) {
-                System.out.print(innerArr[i] + ", ");
+            Arrays.sort(innerArr);
+            //for(int i=0; i<innerArr.length; i++) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(innerArr[0]).append(innerArr[1]).append(innerArr[2]);
+            if (!map.containsKey(sb.toString())){
+                map.put(sb.toString(),sb.toString());
+                System.out.println(innerArr[0] + "," + innerArr[1] + ","+innerArr[2]);
             }
-            System.out.println();
+            //}
+            //System.out.println();
         }
         return resultList;
     }

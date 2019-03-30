@@ -13,14 +13,19 @@ public class Answer4 {
     public static void print(String[] args) {
 
         ArrayList<Integer> list = new ArrayList<>();
-        for (int i = 1; i < args.length; i++) {
-            //list.add(Integer.parseInt(args[i]));
-            int n = Integer.parseInt(args[i]);
-            if (!isPrime(n)){
-                System.out.println("集合里"+n+"不是质数");
-                return;
+        try {
+            for (int i = 1; i < args.length; i++) {
+                //list.add(Integer.parseInt(args[i]));
+                int n = Integer.parseInt(args[i]);
+                if (!isPrime(n)){
+                    System.out.println("集合里"+n+"不是质数");
+                    return;
+                }
+                list.add(n);
             }
-            list.add(n);
+        }catch (Exception e){
+            System.out.println("请输入正确的质数集合");
+            return;
         }
         if (list.size() > 100){
             System.out.println("质数集合个数不能超过100");
@@ -65,6 +70,9 @@ public class Answer4 {
 
     public static boolean isPrime(long num){
 
+        if (num <=1 ){
+            return false;
+        }
         boolean isprime = true;
         int len = (int )Math.sqrt(num);
         for(int i=3;i<=len;i+=2){
