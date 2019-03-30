@@ -9,14 +9,21 @@ import java.util.ArrayList;
  * @date 2018/3/17
  */
 public class Answer4 {
+    private static int MAX_SIZE = 100000;
     public static void print(String[] args) {
         StringBuilder sb = new StringBuilder();
         sb.append("1 ");
         ArrayList<Integer> list = new ArrayList<>();
         for (int i = 1; i < args.length; i++) {
-            list.add(Integer.parseInt(args[i]));
+            //list.add(Integer.parseInt(args[i]));
+            int n = Integer.parseInt(args[i]);
+            if (!isPrime(n)){
+                System.out.println("集合里"+n+"不是质数");
+                return;
+            }
+            list.add(n);
         }
-        for (long num = 2; num < 100; num++) {
+        for (long num = 2; num < MAX_SIZE; num++) {
             boolean isAllIn = true;
             long temp = num;
             for (int i = 2; i <= temp; ) {
@@ -33,9 +40,23 @@ public class Answer4 {
             }
             //质数因子全在给定的质数集合中
             if (isAllIn) {
+                System.out.printf(num + " ");
                 sb.append(num + " ");
             }
         }
-        System.out.println(sb.toString());
+    }
+
+    public static boolean isPrime(long num){
+
+        boolean isprime = true;
+        int len = (int )Math.sqrt(num);
+        for(int i=3;i<=len;i+=2){
+            if(num%i==0){
+                isprime=false;
+                break;
+            }
+        }
+        return isprime;
+
     }
 }
