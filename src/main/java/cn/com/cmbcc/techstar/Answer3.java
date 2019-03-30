@@ -7,82 +7,64 @@ import java.util.Scanner;
  */
 public class Answer3 {
 
-    /*public static void main(String[] args) {
 
-        Scanner in = new Scanner(System.in);
+    public static void print(String str ) {
 
         try{
-            int N = in.nextInt();
-            if(N < 0 || N > 20){
-                System.out.println("输入不符合规范则");
-            }else{
-                int total = 2 * N + 1;
-                for (int i = 0; i<=N; ++i){
+            int n = Integer.parseInt(str);
+            if (n <=0){
+                System.out.println("输入不符合规范");
+            }
+            boolean []ary = new boolean[n];
+            for(int i = 0 ; i < n ; i++) {
+                ary[i] = false ;
+            }
 
-                    //左边空格的输出
-                    for (int j = 0;j<(N-i);j++){
-                        System.out.print(" ");
-                    }
-                    //输出数字的个数
-                    int num = 2*i+1;
-                    for (int j = 0;j<num;j++){
-                        if(N < 10){
-                            System.out.print(i);
-                        }else{
-                            if(i<10){
-                                System.out.print(i+" ");
-                            }else{
-                                System.out.print(i);
+            int sum = 0;
+            int count = 1;
+            while (sum + 1 < n){
+
+                //正向查数
+                for (int j = 1; j<n;j++){
+                    //没有剔除
+                    if (!ary[j] ){
+                        count ++;
+                        if (count == 3){
+                            ary[j] = true;
+                            count = 0;
+                            sum ++;
+                            if (sum + 1 == n){
+                                break;
                             }
                         }
                     }
-                    System.out.println();
-
                 }
-
-            }
-
-        }catch (Exception e){
-            System.out.println("输入不符合规范则");
-        }
-
-    }*/
-
-    public static void print(String s) {
-        int N = 0;
-        try {
-            N = Integer.parseInt(s);
-        } catch (Exception e) {
-            System.out.println("输入不符合规范则");
-        }
-
-        if (N < 0 || N > 20) {
-            System.out.println("输入不符合规范则");
-        } else {
-            int total = 2 * N + 1;
-            for (int i = 0; i <= N; ++i) {
-
-                //左边空格的输出
-                for (int j = 0; j < (N - i); j++) {
-                    System.out.print(" ");
-                }
-                //输出数字的个数
-                int num = 2 * i + 1;
-                for (int j = 0; j < num; j++) {
-                    if (N < 10) {
-                        System.out.print(i);
-                    } else {
-                        if (i < 10) {
-                            System.out.print(i + " ");
-                        } else {
-                            System.out.print(i);
+                //反向查数
+                for (int k = n-2; k>=0;k--){
+                    //没有剔除
+                    if (!ary[k] ){
+                        count ++;
+                        if (count == 3){
+                            ary[k] = true;
+                            count = 0;
+                            sum ++;
+                            if (sum + 1 == n){
+                                break;
+                            }
                         }
                     }
                 }
-                System.out.println();
-
             }
 
+            for(int m = 0 ; m < n ; m++) {
+                if (!ary[m]){
+                    System.out.println(m+1);
+                    break;
+                }
+            }
+
+        }catch (Exception e){
+            System.out.println("输入不符合规范");
         }
     }
 
